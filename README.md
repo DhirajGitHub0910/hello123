@@ -1,112 +1,79 @@
-﻿# .NET Test Samples
-This is sample .NET solution for integrating with [Universal Agent](https://support.qasymphony.com/hc/en-us/articles/360004704172-Universal-Agent-Overview). It includes:
+# Kontent.ai sample ASP.NET Core MVC web application
 
-1. Test projects that support .NET Core 2.2: xUnitSample, MSTestSample, NUnitSample
-2. Test project that support .NET 4.5 (Windows only): UnitTestSample
+[![Build & Test](https://github.com/kontent-ai/sample-app-net/actions/workflows/integrate.yml/badge.svg)](https://github.com/kontent-ai/sample-app-net/actions/workflows/integrate.yml)
+[![codecov](https://codecov.io/gh/kontent-ai/sample-app-net/branch/master/graph/badge.svg?token=X90Anf22sl)](https://codecov.io/gh/kontent-ai/sample-app-net)
+[![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kontent-ai)
+[![Discord](https://img.shields.io/discord/821885171984891914?label=Discord&logo=Discord&logoColor=white)](https://discord.gg/SKCxwPtevJ)
 
-Follow these instructions for [integrating with Universal Agent](https://documentation.tricentis.com/qtest/od/en/content/qtest_launch/universal_agent_user_guides/universal_agent_overview.htm)
-1. [Integrate NUnit Test with Universal Agent](https://documentation.tricentis.com/qtest/od/en/content/qtest_launch/universal_agent_user_guides/integrate_nunit_test_with_universal_agent.htm)
-2. [Integrate MSTest with Universal Agent](https://documentation.tricentis.com/qtest/od/en/content/qtest_launch/universal_agent_user_guides/integrate_mstest_with_universal_agent.htm)
-3. [Integrate xUnit.net with Universal Agent](https://documentation.tricentis.com/qtest/od/en/content/qtest_launch/universal_agent_user_guides/integrate_.net_unittest_with_universal_agent.htm)
-4. [Integrate .NET UnitTest with Universal Agent](https://documentation.tricentis.com/qtest/od/en/content/qtest_launch/universal_agent_user_guides/integrate_.net_unittest_with_universal_agent.htm)
+This is a sample ASP.NET Core MVC app that uses the [Kontent.ai Delivery .NET SDK](https://github.com/kontent-ai/delivery-sdk-net) to retrieve content from [Kontent.ai](https://kontent.ai).
 
+## Getting started
 
-# Package Dependencies
+To run the app:
 
-1. [NunitXml.TestLogger](https://github.com/spekt/nunit.testlogger) to generate [NUnit 3 format](https://github.com/nunit/docs/wiki/Test-Result-XML-Format)
+1. Clone the app repository
+2. Run `npm install && npm run build` in the `DancingGoat` directory to build CSS files for the project ([node.js](https://nodejs.org/) must be installed before running this command)
+3. Open the `DancingGoat.sln` solution file and run the app
+4. Follow the setup wizard to setup your project or adjust the `\DancingGoat\appsettings.json` file:
 
-2. [Selenium.WebDriver](https://www.nuget.org/packages/Selenium.WebDriver/)
+   ```jsonc
+   {
+     // ...
+     "DeliveryOptions": {
+       "ProjectId": "YOUR_PROJECT_ID"
+     }
+     // ...
+   }
+   ```
 
-3. [Selenium.Support](https://www.nuget.org/packages/Selenium.Support/)
+> Follow the [step-by-step tutorial](https://kontent.ai/learn/tutorials/develop-apps/get-started/run-sample-app?tech=dotnet) for even more details.
 
-4. [Selenium.WebDriver.ChromeDriver (Win32, macOS, and Linux64)](https://www.nuget.org/packages/Selenium.WebDriver.ChromeDriver/)
+## Features
 
-# .NET Core 2.2: xUnitSample, MSTestSample, NUnitSample project
+### Edit mode & preview
 
-## Run tests on Command Prompt or Terminal
-Open Terminal (or Command Prompt on Windows). 
+Content contributors sometimes need to fix errors or typos right when they see them on the website. The sample app allows users to navigate from a piece of content on the site straight to the corresponding content item or element in Kontent.ai.
 
-Navigate to the **dotnet-samples** directory.
+To see Edit mode in action:
 
-Publish the test project so all the dependencies are generated in one place. Below command shows how to publish xUnitSample project:
-```
-dotnet publish DotnetCore/xUnitSample/xUnitSample.csproj
-```
-The command will publish the project to **dotnet-samples/DotnetCore/xUnitSample/bin/Debug/netcoreapp2.2/publish** directory
+1. In your Kontent.ai project navigate to Project Settings -> API keys to get the Preview API key. 
+2. Enable Delivery Preview API by adding the key to the `\DancingGoat\appsettings.json` file:
 
-Also, since this project uses Selenium and `publish` command does not automatically copy the **chromedriver** (or **chromedriver.exe** on Windows to the publish directory, execute this command to copy it to the publish directory.
+   ```jsonc
+   {
+     // ...
+     "DeliveryOptions": {
+       "UsePreviewApi": true,
+       "PreviewApiKey": "YOUR_DELIVERY_PREVIEW_API_KEY"
+     }
+     // ...
+   }
+   ```
 
-**Windows**
-```
-copy DotnetCore\xUnitSample\bin\Debug\chromedriver.exe DotnetCore\xUnitSample\bin\Debug\netcoreapp2.2\publish
-```
+   - **Delivery Preview API**: change the key named `PreviewApiKey` in the `DeliveryOptions` section, and use the Delivery Preview API key as its value. To enable calls over the Delivery Preview API, you also need to change the value to `true` of the key named `UsePreviewApi`.
 
-**Linux/Mac**
-```
-cp DotnetCore/xUnitSample/bin/Debug/chromedriver DotnetCore/xUnitSample/bin/Debug/netcoreapp2.2/publish
-```
+3. Run the app.
+4. Navigate to the **About us** section.
+5. Click the **Edit mode** switch in the bottom-left corner.
 
-Now, run tests using any of these **dotnet vstest** command that fits your need. Below are some examples:
+Edit buttons will appear next to each piece of content on the page.
+To explore how the functionality is implemented, navigate to the [`TagHelpers`](https://github.com/kontent-ai/sample-app-net/tree/master/DancingGoat/TagHelpers) folder.
 
-1. Run all tests (classes and methods) in the test project and generate NUnit XML results
-``` 
-dotnet vstest DotnetCore/xUnitSample/bin/Debug/netcoreapp2.2/publish/xUnitSample.dll --logger:"nunit;LogFilePath=./test-results/regressiontest-results.xml"
-```
-2. Run specific test class, e.g. BrowserTest, in the test project and generate NUnit XML result
-```
-dotnet vstest DotnetCore/xUnitSample/bin/Debug/netcoreapp2.2/publish/xUnitSample.dll /Tests:BrowserTest --logger:"nunit;LogFilePath=./test-results/browsertest-results.xml"
-```
+### Responsive images
 
-or UnitTest class only
+The sample app contains a sample implementation of the `img-asset` tag helper from the [Kontent.Ai.AspNetCore](https://www.nuget.org/packages/Kontent.Ai.AspNetCore) NuGet package. Using the `img-asset` tag helper, you can easily create an `img` tag with `srcset` and `sizes` attributes. Read more about [image transformation API](https://kontent.ai/learn/reference/image-transformation).
+You can adjust the behaviour in the `appsettings.json` file.
 
-```
-dotnet vstest DotnetCore/xUnitSample/bin/Debug/netcoreapp2.2/publish/xUnitSample.dll /Tests:UnitTest --logger:"nunit;LogFilePath=./test-results/unittest-results.xml"
-```
-3. Run only one test method of a test class in the test project, e.g. xUnitSample.UnitTest.FailingTest, and generate NUnit XML result
-```
-dotnet vstest DotnetCore/xUnitSample/bin/Debug/netcoreapp2.2/publish/xUnitSample.dll /Tests:xUnitSample.UnitTest.FailingTest --logger:"nunit;LogFilePath=./test-results/xUnitSample.UnitTest.FailingTest-results.xml"
-
-```
-The commands to run tests for MSTestSample, NUnitSample projects are similar to xUnitSample project, you just need to change the xUnitSample to MSTestSample or NUnitSample.
-
-Refer to [dotnet vstest documentation](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-vstest?tabs=netcore21) for more options regarding **dotnet vstest** command
-
-# .NET 4.5+: UnitTestSample project (Windows only)
-
-## Run tests on Command Prompt
-Download [Nuget CLI](https://dist.nuget.org/win-x86-commandline/latest/nuget.exe) to restore the Nuget packages.
-
-Navigate to the **dotnet-samples** directory.
-Open Command Prompt on Windows.
-
-Run command to restore the packages
-```
-\path\to\nuget.exe restore \path\to\Dotnet-Samples.sln
-```
-Build the test project
-```
-"C:\Program Files (x86)\MSBuild\12.0\Bin\MSBuild.exe" Dotnet-Samples.sln /p:Configuration=Debug /p:Platform="Any CPU"
-````
-
-Open Developer Command Prompt and type ```where vstest.console.exe``` to find the location of vstest.console.exe, e.g "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\TestWindow".
-
-Set the path of vstest.console.exe to system environment variables. If you do not do this, you need to give the full path to **vstest.console.exe** in the below commands.
-
-Now, run tests using any of these **vstest.console.exe** command that fits your need.
-Below are some examples:
-
-1. Run all tests (classes and methods) in the test project and generate NUnit XML results
-``` 
-vstest.console.exe Dotnet\UnitTestSample\bin\Debug\UnitTestSample.dll --logger:"nunit;LogFilePath=./test-results/regressiontest-results.xml"
-```
-2. Run specific test class, e.g. BrowserTest, in the test project and generate NUnit XML result
-```
-vstest.console.exe Dotnet\UnitTestSample\bin\Debug\UnitTestSample.dll /Tests:ArithmeticCalculatorTest --logger:"nunit;LogFilePath=./test-results/arithmetic-calculator-test-results.xml"
+```json
+"ImageTransformationOptions": {
+  "ResponsiveWidths": [ 200, 400, 600, 800, 1000, 1200, 1400, 1600, 2000, 4000 ]
+},
 ```
 
-3. Run only one test method of a test class in the test project, e.g. xUnitSample.UnitTest.FailingTest, and generate NUnit XML result
-```
-vstest.console.exe Dotnet\UnitTestSample\bin\Debug\UnitTestSample.dll /Tests:ArithmeticCalculatorTest.PassingAdditionTest --logger:"nunit;LogFilePath=./test-results/test-result.xml"
-```
+### Localized routing
 
-Refer to [vstest console documentation](https://docs.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2017) for more options regarding **vstest.console.exe** command
+The app demonstrates the usage of language prefixes (e.g. `/en-US/articles`) for localizing URLs for SEO purposes. Each language is identified by its codename, in case of this project, it is `en-US` and `es-ES`.
+The used language is obtained from the URL via `/DancingGoat/Infrastructure/RouteRequestCultureProvider` and set as the culture of the app.
+## Get involved
+
+Check out the [contributing](CONTRIBUTING.md) page to see the best places to file issues, start discussions, and begin contributing.
